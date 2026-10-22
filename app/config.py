@@ -1,4 +1,5 @@
 from functools import lru_cache
+from typing import Optional
 from pydantic import Field
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
@@ -24,6 +25,11 @@ class Settings(BaseSettings):
         default="development-only-secret-key-change-in-production",
         alias="SECRET_KEY",
     )
+
+    # Simulation & Security settings
+    simulation_mode: bool = Field(default=True, alias="SIMULATION_MODE")
+    allow_local_destinations: bool = Field(default=False, alias="ALLOW_LOCAL_DESTINATIONS")
+    discourse_test_url: Optional[str] = Field(default=None, alias="DISCOURSE_TEST_URL")
 
     model_config = SettingsConfigDict(
         env_file=".env",

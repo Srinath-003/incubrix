@@ -17,6 +17,14 @@ class ErrorCode:
     RATE_LIMITED = "RATE_LIMITED"
     AUTHENTICATION_ERROR = "AUTHENTICATION_ERROR"
     PUBLISH_FAILED = "PUBLISH_FAILED"
+    CONNECTOR_DISABLED = "CONNECTOR_DISABLED"
+    IDEMPOTENCY_CONFLICT = "IDEMPOTENCY_CONFLICT"
+    IDEMPOTENCY_IN_PROGRESS = "IDEMPOTENCY_IN_PROGRESS"
+    POLICY_VIOLATION = "POLICY_VIOLATION"
+    CONTENT_REJECTED = "CONTENT_REJECTED"
+    PLATFORM_UNAVAILABLE = "PLATFORM_UNAVAILABLE"
+    AMBIGUOUS_TIMEOUT = "AMBIGUOUS_TIMEOUT"
+    SECURITY_VIOLATION = "SECURITY_VIOLATION"
 
 
 class ErrorDetail(BaseModel):
@@ -124,6 +132,105 @@ class InvalidArgumentError(IncuBrixError):
     def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
         super().__init__(
             code=ErrorCode.INVALID_ARGUMENT,
+            message=message,
+            status_code=400,
+            retryable=False,
+            details=details or {},
+        )
+
+
+class ConnectorDisabledError(IncuBrixError):
+    def __init__(self, connector_key: str) -> None:
+        super().__init__(
+            code=ErrorCode.CONNECTOR_DISABLED,
+            message=f"Connector '{connector_key}' is currently disabled",
+            status_code=403,
+            retryable=False,
+            details={"connector_key": connector_key},
+        )
+
+
+class IdempotencyConflictError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.IDEMPOTENCY_CONFLICT,
+            message=message,
+            status_code=409,
+            retryable=False,
+            details=details or {},
+        )
+
+
+class PolicyViolationError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.POLICY_VIOLATION,
+            message=message,
+            status_code=422,
+            retryable=False,
+            details=details or {},
+        )
+
+
+class AuthenticationError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.AUTHENTICATION_ERROR,
+            message=message,
+            status_code=401,
+            retryable=False,
+            details=details or {},
+        )
+
+
+class RateLimitedError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.RATE_LIMITED,
+            message=message,
+            status_code=429,
+            retryable=True,
+            details=details or {},
+        )
+
+
+class ContentRejectedError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.CONTENT_REJECTED,
+            message=message,
+            status_code=422,
+            retryable=False,
+            details=details or {},
+        )
+
+
+class PlatformUnavailableError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.PLATFORM_UNAVAILABLE,
+            message=message,
+            status_code=503,
+            retryable=True,
+            details=details or {},
+        )
+
+
+class AmbiguousTimeoutError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.AMBIGUOUS_TIMEOUT,
+            message=message,
+            status_code=504,
+            retryable=False,
+            details=details or {},
+        )
+
+
+class SecurityViolationError(IncuBrixError):
+    def __init__(self, message: str, details: Optional[Dict[str, Any]] = None) -> None:
+        super().__init__(
+            code=ErrorCode.SECURITY_VIOLATION,
             message=message,
             status_code=400,
             retryable=False,

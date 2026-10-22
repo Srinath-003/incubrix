@@ -54,6 +54,12 @@ class ConnectorManifest(BaseModel):
     auth_type: str = Field(default="oauth2", description="Authentication mechanism")
     supported_methods: List[str] = Field(..., description="List of implemented connector contract methods")
     capabilities: ConnectorCapabilities = Field(default_factory=ConnectorCapabilities)
+    supported_surfaces: List[str] = Field(default_factory=lambda: ["post"], description="Supported platform surfaces (e.g. post, topic)")
+    rate_limits: Dict[str, Any] = Field(default_factory=dict, description="Rate limit specifications")
+    auth_requirements: Dict[str, Any] = Field(default_factory=dict, description="Required connection credential fields")
+    instance_parameters: Dict[str, Any] = Field(default_factory=dict, description="Required or supported destination instance parameters")
+    error_mapping: Dict[str, str] = Field(default_factory=dict, description="Platform error code mapping to IncuBrix error codes")
+    enabled: bool = Field(default=True, description="Whether connector is active and available")
     manifest_version: str = Field(default="1.0", description="Schema version of this manifest")
 
     @field_validator("connector_key")

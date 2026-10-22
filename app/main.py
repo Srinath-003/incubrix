@@ -5,21 +5,34 @@ from fastapi import FastAPI
 
 from app.api.router import api_router
 from app.config import Settings, get_settings
+from app.connectors import register_default_connectors
 from app.core.database import db_manager
 from app.core.handlers import register_exception_handlers
+from app.core.security import RedactingFilter
 
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s [%(levelname)s] %(name)s: %(message)s",
 )
 logger = logging.getLogger("incubrix")
+# Apply credential redacting filter to root logger handlers
+for handler in logging.getLogger().handlers:
+    handler.addFilter(RedactingFilter())
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
     """Application lifespan manager for database connection lifecycle."""
     settings = get_settings()
-    logger.info("Starting %s in [%s] environment", settings.app_name, settings.app_env)
+    logger.info(
+        "Starting %s in [%s] environment (SIMULATION_MODE=%s)",
+        settings.app_name,
+        settings.app_env,
+        settings.simulation_mode,
+    )
+
+    # Register standard platform connectors (Discourse)
+    register_default_connectors()
 
     # Initialize database connection on startup
     try:

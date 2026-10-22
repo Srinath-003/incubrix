@@ -175,12 +175,20 @@ class SampleAssistedConnector(BaseConnector):
         )
 
 
+from app.idempotency.repository import idempotency_repository
+from app.simulation.store import simulation_store
+
+
 @pytest.fixture(autouse=True)
 def clean_registry():
-    """Ensure connector registry is clean before and after each test."""
+    """Ensure connector registry, simulation store, and idempotency store are clean before and after each test."""
     connector_registry.clear()
+    simulation_store.clear()
+    idempotency_repository.clear()
     yield
     connector_registry.clear()
+    simulation_store.clear()
+    idempotency_repository.clear()
 
 
 @pytest.fixture
